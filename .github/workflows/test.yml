@@ -1,13 +1,11 @@
-name: Deploy after Successful Merge
+name: Test Before Deploy
 
 on:
   pull_request:
     branches: [ "main" ]
-    types:
-      - closed
 
 jobs:
-  laravel-deploy:
+  laravel-tests:
     runs-on: ubuntu-latest
     steps:
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
@@ -31,9 +29,3 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: vendor/bin/phpunit
-    - name: SSH into Instance and update
-      run: |
-        echo "${{secrets.SSH_PRIVATE_KEY}}" > private_key && chmod 600 private_key
-        ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.USER_NAME}}@${{secrets.HOST_IP}} "cd /var/www/html && git pull"
-    - name: cleanup
-      run: rm -rf ~/.ssh
