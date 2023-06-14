@@ -33,16 +33,14 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: vendor/bin/phpunit
-    - name: SSH into Instance and update
-      env:
-        PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-        HOSTNAME: ${{secrets.HOST_IP}}
-        USER_NAME: ${{secrets.USER_NAME}}
+    - name: install ssh keys
       run: |
-        echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-          cd /var/www/html &&
-          sudo git config --global --add safe.directory /var/www/html &&
-          sudo git pull
-          '
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.HOST_IP}} > ~/.ssh/known_hosts
+    - name: SSH into Instance and update
+      run: |
+        ssh ${{secrets.USER_NAME}}@${{secrets.HOST_IP}} "cd /var/www/html && sudo git config --global --add safe.directory /var/www/html && sudo git pull"
+    - name: cleanup
+      run: rm -rf ~/.ssh
       
