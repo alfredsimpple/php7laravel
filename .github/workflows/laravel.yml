@@ -31,11 +31,6 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: vendor/bin/phpunit
-    - name: install ssh keys
-      run: |
-        install -m 600 -D /dev/null ~/.ssh/id_rsa
-        echo "${{ secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.HOST_IP}} > ~/.ssh/known_hosts
     - name: SSH into Instance and update
       run: |
         echo "${{secrets.SSH_PRIVATE_KEY}}" > private_key && chmod 600 private_key
