@@ -1,0 +1,15 @@
+name: Test Rainforest
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  rainforest:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Rainforest QA GitHub Action
+          uses: rainforestapp/github-action@v3.2.3
+          with:
+            token: ${{secrets.RAINFOREST_API_TOKEN}}
+            run_group_id: 14974
