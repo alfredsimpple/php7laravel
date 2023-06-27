@@ -1,0 +1,11 @@
+name: Manual Deploy to SGv2 Instance
+on: [workflow_dispatch]
+jobs:
+  deploy:
+    name: Deploy production code to SGv2 Instance 
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into instance and pull repository
+        run: |
+          echo "${{secrets.SGv2_SSH_PRIVATE_KEY}}" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.SGv2_USER_NAME}}@${{secrets.SGv2_HOST_IP}} "cd /var/www/html && git pull"

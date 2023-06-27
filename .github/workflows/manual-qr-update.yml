@@ -1,0 +1,11 @@
+name: Manual Deploy to QR Instance
+on: [workflow_dispatch]
+jobs:
+  deploy:
+    name: Deploy production code to QR Instance 
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into instance and pull repository
+        run: |
+          echo "${{secrets.QR_SSH_PRIVATE_KEY}}" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.QR_USER_NAME}}@${{secrets.QR_HOST_IP}} "cd /var/www/html && git pull"

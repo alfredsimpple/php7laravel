@@ -1,0 +1,16 @@
+name: Deploy to Staging Site on EC2 Instance
+on:
+  pull_request:
+    branches: [ "staging" ]
+    types:
+      - closed
+jobs:
+  deploy:
+    name: Deploy Staging code to stage.simpple.app
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into instance and pull repository
+        run: |
+          echo "${{secrets.STAGING_SSH_PRIVATE_KEY}}" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.STAGING_USER_NAME}}@${{secrets.STAGING_HOST_IP}} "cd /var/www/html && git pull"
+          

@@ -1,10 +1,8 @@
-name: Deploy and Test staging code on Integration Site
+name: Unit Test and Integration Test for staging code upon opening Pull Request
 on: 
-  push:
-    branches:
-      - 'staging**'
-      - 'main**'
-
+  pull_request:
+    branches: [ "staging" ]
+    types: opened
 jobs:
   unit-test:
     runs-on: ubuntu-latest
@@ -42,8 +40,8 @@ jobs:
     steps:
         - name: SSH into Instance and update
           run: |
-            echo "${{secrets.SSH_PRIVATE_KEY}}" > private_key && chmod 600 private_key
-            ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.USER_NAME}}@${{secrets.HOST_IP}} "cd /var/www/html && git pull"
+            echo "${{secrets.INTEGRATION_SSH_PRIVATE_KEY}}" > private_key && chmod 600 private_key
+            ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.INTEGRATION_USER_NAME}}@${{secrets.INTEGRATION_HOST_IP}} "cd /var/www/html && git pull"
 
   integration-test:
     needs: [unit-test, deploy-to-integration]
